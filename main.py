@@ -1,72 +1,92 @@
-from telethon import TelegramClient, events, types
 import asyncio
+import importlib
+import subprocess
+import sys
+import os
+from aiogram import Bot, Dispatcher
+from bot import load_config
 
-# =======================
-# 🔑 Настройки
-# =======================
-api_id = 123456       # твой API_ID из my.telegram.org
-api_hash = 'API_HASH' # твой API_HASH из my.telegram.org
-log_chat_id = 'me'    # куда пересылать сообщения (можно 'me' для себя)
+from commands.users.start import GroupGuardMiddleware
+from commands.admins.subscription import SubscriptionMiddleware
+from commands.admins.baned import BanMiddleware
 
-# =======================
-# 📦 Клиент
-# =======================
-client = TelegramClient('userbot_session', api_id, api_hash)
+# ============================================================
+AUTO_INSTALL_REQ = False  #!True - автоустановка зависимостей \ False - отключено
+# ============================================================
 
-# Хранилище сообщений
-messages = {}  # {message_id: {"sender": str, "text": str}}
 
-# =======================
-# 📝 Событие: новые сообщения
-# =======================
-@client.on(events.NewMessage(incoming=True))
-async def new_message(event):
-    msg = event.message
-    sender = await msg.get_sender()
-    sender_name = sender.username or sender.first_name or "Unknown"
+def install_requirements():
+    if not AUTO_INSTALL_REQ:
+        return
 
-    messages[msg.id] = {
-        "sender": sender_name,
-        "text": msg.text or "<Нет текста>"
-    }
+    req_file = os.path.join(os.path.dirname(__file__), "requirements.txt")
+    if not os.path.exists(req_file):
+        print("⚠️ Файл requirements.txt не найден!")
+        return
 
-# =======================
-# 🛡 Событие: редактированные сообщения
-# =======================
-@client.on(events.MessageEdited)
-async def message_edited(event):
-    msg = event.message
-    old = messages.get(msg.id, {"text": "<неизвестно>"})
-    new_text = msg.text or "<Нет текста>"
+    try:
+        subprocess.run(
+            [sys.executable, "-m", "pip", "install", "-r", req_file, "-q", "--disable-pip-version-check"],
+            check=True
+        )
+        print("✅ Проверка зависимостей завершена.")
+    except subprocess.CalledProcessError:
+        print("⚠️ Не удалось установить зависимости.")
+
+
+HANDLER_PATHS = [
+#============================================================
+    "commands.users.start",
+    "commands.users.proful",
+    "commands.users.shlaf",
+    "commands.admins.give",
+    "commands.admins.admin_ponel",
+    "commands.admins.subscription",
+    "commands.users.pay",
+    "commands.users.random_gifts",
+    "commands.admins.mailing",
+    "commands.admins.baned",
     
-    messages[msg.id] = {"sender": old.get("sender", "Unknown"), "text": new_text}
+#----------
     
-    await client.send_message(log_chat_id,
-        f"✏️ Сообщение от @{old.get('sender')} было изменено:\n"
-        f"Старое: {old.get('text')}\nНовое: {new_text}"
-    )
+#----------
+    
+#===========================================================
+    
+#==========================================================
+]  
 
-# =======================
-# 🗑 Событие: удалённые сообщения
-# =======================
-@client.on(events.MessageDeleted)
-async def message_deleted(event):
-    for msg_id in event.deleted_ids:
-        info = messages.get(msg_id)
-        if info:
-            await client.send_message(log_chat_id,
-                f"🗑 Сообщение от @{info.get('sender')} было удалено:\n"
-                f"{info.get('text')}"
-            )
-            # Можно удалить из памяти после пересылки
-            del messages[msg_id]
 
-# =======================
-# 🚀 Запуск
-# =======================
+async def register_handlers(dp: Dispatcher):
+    for path in HANDLER_PATHS:
+        module = importlib.import_module(path)
+        if hasattr(module, "router"):
+            dp.include_router(module.router)
+
+
 async def main():
-    print("Userbot запущен. Ловим сообщения...")
-    await client.run_until_disconnected()
+    install_requirements()
 
-with client:
-    client.loop.run_until_complete(main())
+    config = load_config()
+    bot = Bot(token=config.bot_token)
+    dp = Dispatcher()
+
+    dp.message.middleware(GroupGuardMiddleware())
+    dp.callback_query.middleware(GroupGuardMiddleware())
+    dp.message.middleware(SubscriptionMiddleware())
+
+    dp.message.outer_middleware(BanMiddleware())
+    dp.callback_query.outer_middleware(BanMiddleware())
+
+
+
+    await register_handlers(dp)
+
+    await bot.delete_webhook(drop_pending_updates=True)
+    await dp.start_polling(bot)
+
+
+
+if __name__ == "__main__":
+    print("✅ Bot started successfully.")
+    asyncio.run(main())

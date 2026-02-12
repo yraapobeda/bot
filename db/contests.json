@@ -1,0 +1,42 @@
+{
+    "1768670217418": {
+        "message_id": 3518,
+        "max_users": 2,
+        "amount": 10,
+        "type": "rcy",
+        "participants": [
+            1340806911,
+            7926367875
+        ],
+        "active": false
+    },
+    "1768670304796": {
+        "message_id": 3521,
+        "max_users": 1,
+        "amount": 1,
+        "type": "rcy",
+        "participants": [
+            7926367875
+        ],
+        "active": false
+    },
+    "1768670364591": {
+        "message_id": 3523,
+        "max_users": 10,
+        "amount": 25,
+        "type": "rcy",
+        "participants": [
+            7926367875,
+            7521297948,
+            8509761874,
+            7338765409,
+            1577065739,
+            5162883117,
+            6307417347,
+            6341684486,
+            6037030387,
+            6785033749
+        ],
+        "active": false
+    }
+}

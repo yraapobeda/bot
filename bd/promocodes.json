@@ -1,0 +1,80 @@
+{
+    "1": {
+        "code": "ХУЙ",
+        "reward_type": "rcy",
+        "amount": 1,
+        "max_uses": 1,
+        "used": 1,
+        "users": [
+            "1340806911"
+        ]
+    },
+    "3": {
+        "code": "ОЛЕНИЙПЕНИС",
+        "reward_type": "rcy",
+        "amount": 666,
+        "max_uses": 2,
+        "used": 2,
+        "users": [
+            "7926367875",
+            "1340806911"
+        ]
+    },
+    "4": {
+        "code": "БЕТА",
+        "reward_type": "rcy",
+        "amount": 1,
+        "max_uses": 120,
+        "used": 4,
+        "users": [
+            "7926367875",
+            "7338765409",
+            "7521297948",
+            "8226600592"
+        ]
+    },
+    "5": {
+        "code": "ПЕНИС",
+        "reward_type": "keys",
+        "amount": 666,
+        "max_uses": 1,
+        "used": 1,
+        "users": [
+            "7926367875"
+        ]
+    },
+    "6": {
+        "code": "МАЙНКРАФТ",
+        "reward_type": "rcy",
+        "amount": 2,
+        "max_uses": 10,
+        "used": 3,
+        "users": [
+            "7338765409",
+            "7521297948",
+            "8226600592"
+        ]
+    },
+    "7": {
+        "code": "ВОССТАНОВЛЕНИЕ",
+        "reward_type": "rcy",
+        "amount": 5,
+        "max_uses": 30,
+        "used": 3,
+        "users": [
+            "8226600592",
+            "7338765409",
+            "7926367875"
+        ]
+    },
+    "8": {
+        "code": "ОГУРЕЦ",
+        "reward_type": "rcy",
+        "amount": 15,
+        "max_uses": 1,
+        "used": 1,
+        "users": [
+            "7338765409"
+        ]
+    }
+}
