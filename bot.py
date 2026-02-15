@@ -9,4 +9,5 @@ class Config:
     bot_token: str
 
 def load_config() -> Config:
-    return Config("7728266567:AAFq2qKO9qxsPtB4jULrXCOK3LjCbvmLDso")
+
+    return Config("Иди_нахуй_сын_шлюхи:3")
